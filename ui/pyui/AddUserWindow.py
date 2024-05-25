@@ -14,7 +14,6 @@ from utils.utils import count_list_items, get_users_list
 
 
 class Ui_AddUserWindow(object):
-
     def __init__(self, main_window, session):
         self.main_window = main_window
         self.session = session
@@ -24,32 +23,31 @@ class Ui_AddUserWindow(object):
         self.found = False
 
         self.success_message = str("Вы успешно добавили пользователя!")
-        self.failure_message = str("Вы ввели некорректный пароль\n"
-                                   "Корректный пароль должен содержать от 8 до 20 символов и включать в них: цифры, "
-                                   "спецсимволы, прописные и строчные буквы")
+        self.failure_message = str("Ошибка")
 
     def setupUi(self, AddUserWindow):
         if not AddUserWindow.objectName():
             AddUserWindow.setObjectName(u"AddUserWindow")
-        AddUserWindow.resize(649, 564)
+        AddUserWindow.resize(649, 651)
         self.centralwidget = QWidget(AddUserWindow)
         self.centralwidget.setObjectName(u"centralwidget")
 
         # USER INFO FRAME #
         self.user_info_frame = QFrame(self.centralwidget)
         self.user_info_frame.setObjectName(u"user_info_frame")
-        self.user_info_frame.setGeometry(QRect(20, 20, 381, 231))
+        self.user_info_frame.setGeometry(QRect(20, 20, 381, 311))
         self.user_info_frame.setFrameShape(QFrame.WinPanel)
         self.user_info_frame.setFrameShadow(QFrame.Sunken)
 
-        # name label
+        # NAME#
+        # label
         self.name_label = QLabel(self.user_info_frame)
         self.name_label.setObjectName(u"name_label")
         self.name_label.setGeometry(QRect(60, 30, 61, 25))
         font = QFont()
         font.setPointSize(14)
-        #name input
         self.name_label.setFont(font)
+        # Input
         self.name_input = QLineEdit(self.user_info_frame)
         self.name_input.setObjectName(u"name_input")
         self.name_input.setGeometry(QRect(140, 30, 167, 25))
@@ -63,7 +61,8 @@ class Ui_AddUserWindow(object):
         font1.setPointSize(12)
         self.name_input.setFont(font1)
 
-        # phone input
+        # PHONE
+        # Input
         self.phone_input = QLineEdit(self.user_info_frame)
         self.phone_input.setObjectName(u"phone_input")
         self.phone_input.setGeometry(QRect(140, 70, 167, 25))
@@ -71,18 +70,19 @@ class Ui_AddUserWindow(object):
         self.phone_input.setSizePolicy(sizePolicy)
         self.phone_input.setSizeIncrement(QSize(40, 0))
         self.phone_input.setFont(font1)
-        # phone label
+        # label
         self.phone_label = QLabel(self.user_info_frame)
         self.phone_label.setObjectName(u"phone_label")
         self.phone_label.setGeometry(QRect(60, 70, 77, 25))
         self.phone_label.setFont(font)
 
-        # email label
+        # EMAIL
+        # label
         self.email_label = QLabel(self.user_info_frame)
         self.email_label.setObjectName(u"email_label")
         self.email_label.setGeometry(QRect(60, 110, 61, 25))
         self.email_label.setFont(font)
-        # email input
+        # Input
         self.email_input = QLineEdit(self.user_info_frame)
         self.email_input.setObjectName(u"email_input")
         self.email_input.setGeometry(QRect(140, 110, 167, 25))
@@ -91,12 +91,13 @@ class Ui_AddUserWindow(object):
         self.email_input.setSizeIncrement(QSize(40, 0))
         self.email_input.setFont(font1)
 
-        # service label
+        # SERVICE
+        # label
         self.service_label = QLabel(self.user_info_frame)
         self.service_label.setObjectName(u"service_label")
         self.service_label.setGeometry(QRect(60, 150, 61, 25))
         self.service_label.setFont(font)
-        #service input
+        # Input
         self.service_input = QLineEdit(self.user_info_frame)
         self.service_input.setObjectName(u"service_input")
         self.service_input.setGeometry(QRect(140, 150, 167, 25))
@@ -105,12 +106,13 @@ class Ui_AddUserWindow(object):
         self.service_input.setSizeIncrement(QSize(40, 0))
         self.service_input.setFont(font1)
 
-        # master label
+        # MASTER
+        # label
         self.master_label = QLabel(self.user_info_frame)
         self.master_label.setObjectName(u"master_label")
         self.master_label.setGeometry(QRect(60, 190, 71, 25))
         self.master_label.setFont(font)
-        # master input
+        # Input
         self.mster_input = QLineEdit(self.user_info_frame)
         self.mster_input.setObjectName(u"mster_input")
         self.mster_input.setGeometry(QRect(140, 190, 167, 25))
@@ -119,17 +121,47 @@ class Ui_AddUserWindow(object):
         self.mster_input.setSizeIncrement(QSize(40, 0))
         self.mster_input.setFont(font1)
 
+        # DATA
+        # Input
+        self.data_input = QLineEdit(self.user_info_frame)
+        self.data_input.setObjectName(u"data_input")
+        self.data_input.setGeometry(QRect(140, 230, 167, 25))
+        sizePolicy.setHeightForWidth(self.data_input.sizePolicy().hasHeightForWidth())
+        self.data_input.setSizePolicy(sizePolicy)
+        self.data_input.setSizeIncrement(QSize(40, 0))
+        self.data_input.setFont(font1)
+        # label
+        self.data_label = QLabel(self.user_info_frame)
+        self.data_label.setObjectName(u"data_label")
+        self.data_label.setGeometry(QRect(60, 230, 71, 25))
+        self.data_label.setFont(font)
+
+        # TIME
+        # label
+        self.time_label = QLabel(self.user_info_frame)
+        self.time_label.setObjectName(u"time_label")
+        self.time_label.setGeometry(QRect(60, 270, 71, 25))
+        self.time_label.setFont(font)
+        # Input
+        self.time_input = QLineEdit(self.user_info_frame)
+        self.time_input.setObjectName(u"time_input")
+        self.time_input.setGeometry(QRect(140, 270, 167, 25))
+        sizePolicy.setHeightForWidth(self.time_input.sizePolicy().hasHeightForWidth())
+        self.time_input.setSizePolicy(sizePolicy)
+        self.time_input.setSizeIncrement(QSize(40, 0))
+        self.time_input.setFont(font1)
+
         # LIST FRAME #
         self.list_frame = QFrame(self.centralwidget)
         self.list_frame.setObjectName(u"list_frame")
-        self.list_frame.setGeometry(QRect(10, 290, 621, 261))
+        self.list_frame.setGeometry(QRect(10, 380, 621, 261))
         self.list_frame.setFrameShape(QFrame.WinPanel)
         self.list_frame.setFrameShadow(QFrame.Sunken)
 
-        # User list
+        # user list
         self.user_list = QListWidget(self.list_frame)
         self.user_list.setObjectName(u"user_list")
-        self.user_list.setGeometry(QRect(10, 10, 591, 211))
+        self.user_list.setGeometry(QRect(10, 20, 591, 191))
         self.user_list.setFont(font)
 
         self.users = get_users_list(self.session)
@@ -137,24 +169,26 @@ class Ui_AddUserWindow(object):
             item = QListWidgetItem(user_info)
             self.user_list.addItem(item)
 
-        # User counter label
+        # USER COUNT #
+        # label
         self.user_count_label = QLabel(self.list_frame)
         self.user_count_label.setObjectName(u"user_count_label")
         self.user_count_label.setGeometry(QRect(10, 230, 47, 13))
-        # user counter
+
+        # user count
         self.user_count = QTextBrowser(self.list_frame)
         self.user_count.setObjectName(u"user_count")
         self.user_count.setGeometry(QRect(60, 230, 51, 21))
 
         self.user_count.setText(self.item)
 
-        # list label
+        # List label
         self.list_label = QLabel(self.centralwidget)
         self.list_label.setObjectName(u"list_label")
-        self.list_label.setGeometry(QRect(10, 260, 81, 21))
+        self.list_label.setGeometry(QRect(20, 350, 81, 21))
         self.list_label.setFont(font)
 
-        # BUTTONS #
+        # BUTTON FRAME #
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
         self.frame.setGeometry(QRect(450, 50, 171, 191))
@@ -229,6 +263,8 @@ class Ui_AddUserWindow(object):
         self.user_data["user_email"] = self.email_input.text()
         self.user_data["user_service"] = self.service_input.text()
         self.user_data["user_master"] = self.mster_input.text()
+        self.user_data["user_appointment_data"] = self.data_input.text()
+        self.user_data["user_time"] = self.time_input.text()
 
         session = self.session
         try:
@@ -238,13 +274,17 @@ class Ui_AddUserWindow(object):
                   f"{self.user_data["user_phone"]}\n"
                   f"{self.user_data["user_email"]}\n"
                   f"{self.user_data["user_service"]}\n"
-                  f"{self.user_data["user_master"]}\n")
+                  f"{self.user_data["user_master"]}\n"
+                  f"{self.user_data["user_appointment_data"]}\n"
+                  f"{self.user_data["user_time"]}\n")
 
             user_info = (f"{self.user_data['user_name']}"
                          f" {self.user_data['user_phone']}"
                          f" {self.user_data["user_email"]}"
                          f" {self.user_data["user_service"]}"
-                         f" {self.user_data["user_master"]}")
+                         f" {self.user_data["user_master"]}"
+                         f" {self.user_data["user_appointment_data"]}"
+                         f" {self.user_data["user_time"]}")
 
             self.show_success_message()
 
@@ -261,6 +301,8 @@ class Ui_AddUserWindow(object):
             self.email_input.clear()
             self.service_input.clear()
             self.mster_input.clear()
+            self.data_input.clear()
+            self.time_input.clear()
 
         except Exception as e:
             self.show_failure_message(f"Some error: \n"
@@ -280,6 +322,8 @@ class Ui_AddUserWindow(object):
         user_email = user_info[2].split(":")[1].strip()
         user_service = user_info[3].split(":")[1].strip()
         user_master = user_info[4].split(":")[1].strip()
+        user_data = user_info[5].split(":")[1].strip()
+        user_time = user_info[6].split(":")[1].strip()
 
         session = self.session
         try:
@@ -288,7 +332,9 @@ class Ui_AddUserWindow(object):
                             phone=user_phone,
                             email=user_email,
                             service=user_service,
-                            master=user_master)
+                            master=user_master,
+                            data=user_data,
+                            time=user_time)
 
             self.user_list.clear()
             self.users = get_users_list(self.session)
@@ -303,6 +349,9 @@ class Ui_AddUserWindow(object):
             self.email_input.clear()
             self.service_input.clear()
             self.mster_input.clear()
+            self.data_input.clear()
+            self.time_input.clear()
+
         except Exception as e:
             print("Error deleting user:")
             print(e)
@@ -337,6 +386,8 @@ class Ui_AddUserWindow(object):
             QCoreApplication.translate("AddUserWindow", u"\u0423\u0441\u043b\u0443\u0433\u0430", None))
         self.master_label.setText(
             QCoreApplication.translate("AddUserWindow", u"\u041c\u0430\u0441\u0442\u0435\u0440", None))
+        self.data_label.setText(QCoreApplication.translate("AddUserWindow", u"\u0414\u0430\u0442\u0430", None))
+        self.time_label.setText(QCoreApplication.translate("AddUserWindow", u"\u0412\u0440\u0435\u043c\u044f", None))
         self.user_count_label.setText(
             QCoreApplication.translate("AddUserWindow", u"\u0412\u0441\u0435\u0433\u043e:", None))
         self.list_label.setText(

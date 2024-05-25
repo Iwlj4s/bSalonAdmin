@@ -13,12 +13,17 @@ def orm_user_add_info(session, data: dict):
     email = data.get("user_email")
     service = data.get("user_service")
     master = data.get("user_master")
+    appointment_data = data.get("user_appointment_data")
+    time = data.get("user_time")
 
     new_user = User(name=data.get("user_name"),
                     phone=data.get("user_phone"),
                     email=data.get("user_email"),
                     service=data.get("user_service"),
-                    master=data.get("user_master"),)
+                    master=data.get("user_master"),
+                    appointment_data=data.get("user_appointment_data"),
+                    time=data.get("user_time"))
+
     session.add(new_user)
     session.commit()
 
@@ -40,9 +45,10 @@ def orm_get_user_by_name(session, user_name):
 
 
 # Delete User
-def orm_delete_user(session, name, phone, email, service, master):
+def orm_delete_user(session, name, phone, email, service, master, data, time):
     query = delete(User).where(and_(User.name == name, User.phone == phone, User.email == email,
-                                    User.service == service, User.master == master))
+                                    User.service == service, User.master == master,
+                                    User.data == data, User.time == time))
     session.execute(query)
     session.commit()
 

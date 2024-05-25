@@ -14,6 +14,8 @@ class User(Base):
     email: Mapped[str] = mapped_column(Text, nullable=False)
     service: Mapped[str] = mapped_column(Text, nullable=False)
     master: Mapped[str] = mapped_column(Text, nullable=False)
+    appointment_data: Mapped[str] = mapped_column(Text, nullable=False)
+    time: Mapped[str] = mapped_column(Text, nullable=False)
 
 
 class Admin(Base):
