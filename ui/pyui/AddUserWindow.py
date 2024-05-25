@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QLineEdit,
                                QListWidget, QListWidgetItem, QMainWindow, QPushButton,
                                QSizePolicy, QTextBrowser, QWidget, QMessageBox)
 
+from checks.user_check import validate_date_input, validate_time_input, correct_time_date_master
 from database.orm_query import orm_user_add_info, orm_delete_user
 from utils.utils import count_list_items, get_users_list
 
@@ -24,6 +25,7 @@ class Ui_AddUserWindow(object):
 
         self.success_message = str("Вы успешно добавили пользователя!")
         self.failure_message = str("Ошибка")
+        self.reason = str("")
 
     def setupUi(self, AddUserWindow):
         if not AddUserWindow.objectName():
@@ -253,6 +255,14 @@ class Ui_AddUserWindow(object):
         msg.setStandardButtons(QMessageBox.StandardButton.Ok)
         button = msg.exec()
 
+    def show_failure_message_with_reason(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Error")
+        msg.setText(f"{self.reason}")
+
+        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+        button = msg.exec()
+
     def open_main_Window(self, AddUserWindow):
         self.main_window.show()
         AddUserWindow.hide()
@@ -263,46 +273,66 @@ class Ui_AddUserWindow(object):
         self.user_data["user_email"] = self.email_input.text()
         self.user_data["user_service"] = self.service_input.text()
         self.user_data["user_master"] = self.mster_input.text()
-        self.user_data["user_appointment_data"] = self.data_input.text()
+        self.user_data["user_date"] = self.data_input.text()
         self.user_data["user_time"] = self.time_input.text()
 
         session = self.session
         try:
-            orm_user_add_info(session=session, data=self.user_data)
-            print("New user: \n"
-                  f"{self.user_data["user_name"]}\n"
-                  f"{self.user_data["user_phone"]}\n"
-                  f"{self.user_data["user_email"]}\n"
-                  f"{self.user_data["user_service"]}\n"
-                  f"{self.user_data["user_master"]}\n"
-                  f"{self.user_data["user_appointment_data"]}\n"
-                  f"{self.user_data["user_time"]}\n")
+            correct_time_and_date_master, self.reason = correct_time_date_master(session=session,
+                                                                                 date=self.data_input.text(),
+                                                                                 time=self.time_input.text(),
+                                                                                 master=self.mster_input.text())
+            valid_date = validate_date_input(self.data_input.text())
+            valid_time = validate_time_input(self.time_input.text())
 
-            user_info = (f"{self.user_data['user_name']}"
-                         f" {self.user_data['user_phone']}"
-                         f" {self.user_data["user_email"]}"
-                         f" {self.user_data["user_service"]}"
-                         f" {self.user_data["user_master"]}"
-                         f" {self.user_data["user_appointment_data"]}"
-                         f" {self.user_data["user_time"]}")
+            if valid_date is None:
+                self.reason = "Некорректный формат даты.\nПожалуйста, введите дату в формате 'дд-мм-гг гг'"
+                self.show_failure_message_with_reason()
+                return
 
-            self.show_success_message()
+            if valid_time is None:
+                self.reason = "Некорректный формат времени.\nПожалуйста, введите время в формате 'ч:м'"
+                self.show_failure_message_with_reason()
+                return
 
-            self.user_list.clear()
-            self.users = get_users_list(self.session)
-            for user_info in self.users.split("\n"):
-                item = QListWidgetItem(user_info)
-                self.user_list.addItem(item)
+            if correct_time_and_date_master:
+                orm_user_add_info(session=session, data=self.user_data)
+                print("New user: \n"
+                      f"{self.user_data["user_name"]}\n"
+                      f"{self.user_data["user_phone"]}\n"
+                      f"{self.user_data["user_email"]}\n"
+                      f"{self.user_data["user_service"]}\n"
+                      f"{self.user_data["user_master"]}\n"
+                      f"{self.user_data["user_date"]}\n"
+                      f"{self.user_data["user_time"]}\n")
 
-            self.user_count.setText(count_list_items(self.session))
+                user_info = (f"{self.user_data['user_name']}"
+                             f" {self.user_data['user_phone']}"
+                             f" {self.user_data["user_email"]}"
+                             f" {self.user_data["user_service"]}"
+                             f" {self.user_data["user_master"]}"
+                             f" {self.user_data["user_date"]}"
+                             f" {self.user_data["user_time"]}")
 
-            self.name_input.clear()
-            self.phone_input.clear()
-            self.email_input.clear()
-            self.service_input.clear()
-            self.mster_input.clear()
-            self.data_input.clear()
-            self.time_input.clear()
+                self.show_success_message()
+
+                self.user_list.clear()
+                self.users = get_users_list(self.session)
+                for user_info in self.users.split("\n"):
+                    item = QListWidgetItem(user_info)
+                    self.user_list.addItem(item)
+
+                self.user_count.setText(count_list_items(self.session))
+
+                self.name_input.clear()
+                self.phone_input.clear()
+                self.email_input.clear()
+                self.service_input.clear()
+                self.mster_input.clear()
+                self.data_input.clear()
+                self.time_input.clear()
+            else:
+                self.show_failure_message_with_reason()
 
         except Exception as e:
             self.show_failure_message(f"Some error: \n"
@@ -322,8 +352,16 @@ class Ui_AddUserWindow(object):
         user_email = user_info[2].split(":")[1].strip()
         user_service = user_info[3].split(":")[1].strip()
         user_master = user_info[4].split(":")[1].strip()
-        user_data = user_info[5].split(":")[1].strip()
+        user_date = user_info[5].split(":")[1].strip()
         user_time = user_info[6].split(":")[1].strip()
+
+        print(user_name)
+        print(user_phone)
+        print(user_email)
+        print(user_service)
+        print(user_master)
+        print(user_date)
+        print(user_time)
 
         session = self.session
         try:
@@ -333,7 +371,7 @@ class Ui_AddUserWindow(object):
                             email=user_email,
                             service=user_service,
                             master=user_master,
-                            data=user_data,
+                            date=user_date,
                             time=user_time)
 
             self.user_list.clear()

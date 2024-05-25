@@ -13,7 +13,7 @@ def orm_user_add_info(session, data: dict):
     email = data.get("user_email")
     service = data.get("user_service")
     master = data.get("user_master")
-    appointment_data = data.get("user_appointment_data")
+    date = data.get("user_date")
     time = data.get("user_time")
 
     new_user = User(name=data.get("user_name"),
@@ -21,7 +21,7 @@ def orm_user_add_info(session, data: dict):
                     email=data.get("user_email"),
                     service=data.get("user_service"),
                     master=data.get("user_master"),
-                    appointment_data=data.get("user_appointment_data"),
+                    date=data.get("user_date"),
                     time=data.get("user_time"))
 
     session.add(new_user)
@@ -45,10 +45,10 @@ def orm_get_user_by_name(session, user_name):
 
 
 # Delete User
-def orm_delete_user(session, name, phone, email, service, master, data, time):
+def orm_delete_user(session, name, phone, email, service, master, date, time):
     query = delete(User).where(and_(User.name == name, User.phone == phone, User.email == email,
                                     User.service == service, User.master == master,
-                                    User.data == data, User.time == time))
+                                    User.date == date, User.time == time))
     session.execute(query)
     session.commit()
 
@@ -60,3 +60,30 @@ def orm_get_admin_by_name(session, user_name):
     admin = result.scalar()
 
     return admin
+
+
+# get data
+def orm_get_user_date(session, date):
+    query = select(User).filter(User.date == date)
+    result = session.execute(query)
+    date = result.scalar()
+
+    return date
+
+
+# get time
+def orm_get_user_time(session, time):
+    query = select(User).filter(User.time == time)
+    result = session.execute(query)
+    time = result.scalar()
+
+    return time
+
+
+# get master
+def orm_get_master(session, master):
+    query = select(User).filter(User.master == master)
+    result = session.execute(query)
+    master = result.scalar()
+
+    return master
