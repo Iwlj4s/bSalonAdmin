@@ -2,6 +2,9 @@ import datetime
 import re
 from email_validator import validate_email, EmailNotValidError
 
+from sqlalchemy import select
+
+from database.database import User
 from database.orm_query import orm_get_user_by_name, orm_get_admin_by_name, orm_get_user_date, orm_get_user_time, \
     orm_get_master
 
@@ -23,6 +26,16 @@ def admin_in_db(user_name, user_password, session):
         print(admin.password)
         if admin.password == user_password:
             return True
+
+    else:
+        return False
+
+
+# check len all inputs
+def validate_len_inputs(name, phone, email, service, master_name, date, time):
+    if len(name) >= 2 and len(phone) >= 2 and len(email) >= 2 and len(service) >= 2 and len(master_name) >= 2 and len(
+            str(date)) >= 2 and len(str(time)) >= 2:
+        return True
 
     else:
         return False
@@ -69,6 +82,15 @@ def validate_date_input(date_str):
         return None
 
 
+# Check correct Master Name
+def validate_master_name_input(master_name):
+    master_name_pattern = r'^\w+$'
+    if re.match(master_name_pattern, master_name):
+        return True
+    else:
+        return False
+
+
 # Check correct Time input
 def validate_time_input(time_str):
     try:
@@ -80,12 +102,11 @@ def validate_time_input(time_str):
 
 # Time and date already in DB
 def correct_time_date_master(session, date, time, master):
-    date = orm_get_user_date(session=session, date=date)
-    time = orm_get_user_time(session=session, time=time)
-    master = orm_get_master(session=session, master=master)
-    reason = "В этот день на это время к этому мастеру уже есть запись"
+    query = select(User).filter(User.date == date, User.time == time, User.master == master)
+    result = session.execute(query)
+    existing_record = result.scalar()
 
-    if date and time:
-        return False, reason
+    if existing_record:
+        return False
 
-    return True, ""
+    return True

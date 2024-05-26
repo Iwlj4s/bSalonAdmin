@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QLineEdit,
                                QSizePolicy, QTextBrowser, QWidget, QMessageBox)
 
 from checks.user_check import validate_date_input, validate_time_input, correct_time_date_master, validate_name_input, \
-    validate_phone_input, validate_email_input
+    validate_phone_input, validate_email_input, validate_master_name_input, validate_len_inputs
 from database.orm_query import orm_user_add_info, orm_delete_user
 from utils.utils import count_list_items, get_users_list
 
@@ -273,30 +273,52 @@ class Ui_AddUserWindow(object):
         self.user_data["user_phone"] = self.phone_input.text()
         self.user_data["user_email"] = self.email_input.text()
         self.user_data["user_service"] = self.service_input.text()
-        self.user_data["user_master"] = self.mster_input.text()
+        self.user_data["user_master"] = "Мастер " + self.mster_input.text()
+        master_name = str("Мастер " + self.mster_input.text())
         self.user_data["user_date"] = self.data_input.text()
         self.user_data["user_time"] = self.time_input.text()
 
         session = self.session
         try:
-            correct_time_and_date_master, self.reason = correct_time_date_master(session=session,
-                                                                                 date=self.data_input.text(),
-                                                                                 time=self.time_input.text(),
-                                                                                 master=self.mster_input.text())
+            correct_time_and_date_master = correct_time_date_master(session=session,
+                                                                    date=self.data_input.text(),
+                                                                    time=self.time_input.text(),
+                                                                    master=master_name)
+            print(master_name)
+            valid_len_inputs = validate_len_inputs(name=self.name_input.text(),
+                                                   phone=self.phone_input.text(),
+                                                   email=self.email_input.text(),
+                                                   service=self.service_input.text(),
+                                                   master_name=self.mster_input.text(),
+                                                   date=self.data_input.text(),
+                                                   time=self.time_input.text())
+
             valid_name = validate_name_input(self.name_input.text())
             valid_phone = validate_phone_input(self.phone_input.text())
             valid_email = validate_email_input(self.email_input.text())
+            valid_master_name = validate_master_name_input(self.mster_input.text())
             valid_date = validate_date_input(self.data_input.text())
             valid_time = validate_time_input(self.time_input.text())
 
+            if not valid_len_inputs:
+                self.reason = "Поля не должны быть пустыми"
+                self.show_failure_message_with_reason()
+                return
+
             if not valid_name:
-                self.reason = "Введите корректное имя'"
+                self.reason = "Введите корректное имя"
                 self.show_failure_message_with_reason()
                 return
 
             if not valid_phone:
                 self.reason = ("Некорректный формат номера телефона."
                                "\nПожалуйста, введите номер в формате +7(XXX)-XXX-XX-XX.")
+                self.show_failure_message_with_reason()
+                return
+
+            if not valid_master_name:
+                self.reason = ("Некорректный формат ввода имени мастера"
+                               "\nПожалуйста, введите имя мастера, например 'Анна'")
                 self.show_failure_message_with_reason()
                 return
 
@@ -315,44 +337,46 @@ class Ui_AddUserWindow(object):
                 self.show_failure_message_with_reason()
                 return
 
-            if correct_time_and_date_master:
-                orm_user_add_info(session=session, data=self.user_data)
-                print("New user: \n"
-                      f"{self.user_data["user_name"]}\n"
-                      f"{self.user_data["user_phone"]}\n"
-                      f"{self.user_data["user_email"]}\n"
-                      f"{self.user_data["user_service"]}\n"
-                      f"{self.user_data["user_master"]}\n"
-                      f"{self.user_data["user_date"]}\n"
-                      f"{self.user_data["user_time"]}\n")
-
-                user_info = (f"{self.user_data['user_name']}"
-                             f" {self.user_data['user_phone']}"
-                             f" {self.user_data["user_email"]}"
-                             f" {self.user_data["user_service"]}"
-                             f" {self.user_data["user_master"]}"
-                             f" {self.user_data["user_date"]}"
-                             f" {self.user_data["user_time"]}")
-
-                self.show_success_message()
-
-                self.user_list.clear()
-                self.users = get_users_list(self.session)
-                for user_info in self.users.split("\n"):
-                    item = QListWidgetItem(user_info)
-                    self.user_list.addItem(item)
-
-                self.user_count.setText(count_list_items(self.session))
-
-                self.name_input.clear()
-                self.phone_input.clear()
-                self.email_input.clear()
-                self.service_input.clear()
-                self.mster_input.clear()
-                self.data_input.clear()
-                self.time_input.clear()
-            else:
+            if not correct_time_and_date_master:
+                self.reason = "На этот день и на это время данный мастер занят"
                 self.show_failure_message_with_reason()
+                return
+
+            orm_user_add_info(session=session, data=self.user_data)
+            print("New user: \n"
+                  f"{self.user_data["user_name"]}\n"
+                  f"{self.user_data["user_phone"]}\n"
+                  f"{self.user_data["user_email"]}\n"
+                  f"{self.user_data["user_service"]}\n"
+                  f"{self.user_data["user_master"]}\n"
+                  f"{self.user_data["user_date"]}\n"
+                  f"{self.user_data["user_time"]}\n")
+
+            user_info = (f"{self.user_data['user_name']}"
+                         f" {self.user_data['user_phone']}"
+                         f" {self.user_data["user_email"]}"
+                         f" {self.user_data["user_service"]}"
+                         f" {self.user_data["user_master"]}"
+                         f" {self.user_data["user_date"]}"
+                         f" {self.user_data["user_time"]}")
+
+            self.show_success_message()
+
+            self.user_list.clear()
+            self.users = get_users_list(self.session)
+            for user_info in self.users.split("\n"):
+                item = QListWidgetItem(user_info)
+                self.user_list.addItem(item)
+
+            self.user_count.setText(count_list_items(self.session))
+
+            self.name_input.clear()
+            self.phone_input.clear()
+            self.email_input.clear()
+            self.service_input.clear()
+            self.mster_input.clear()
+            self.data_input.clear()
+            self.time_input.clear()
 
         except Exception as e:
             self.show_failure_message(f"Some error: \n"
@@ -411,21 +435,34 @@ class Ui_AddUserWindow(object):
         search_name = self.name_input.text()
         search_phone = self.phone_input.text()
 
+        valid_name = validate_name_input(self.name_input.text())
+        valid_phone = validate_phone_input(self.phone_input.text())
+
         if not search_name and not search_phone:
             QMessageBox.warning(self.centralwidget, 'Search Error', 'Введите имя пользователя и телефон')
             return
-
-        for index in range(self.user_list.count()):
-            item = self.user_list.item(index)
-            user_info = item.text()
-            if search_name in user_info or search_phone in user_info:
-                self.found = True
-                self.user_list.setCurrentItem(item)
+        else:
+            if not valid_name:
+                self.reason = "Введите корректное имя"
+                self.show_failure_message_with_reason()
                 return
 
-        if not self.found:
-            QMessageBox.warning(self.centralwidget, 'Search Error', 'Введите корректные данные')
-            return
+            if not valid_phone:
+                self.reason = ("Некорректный формат номера телефона."
+                               "\nПожалуйста, введите номер в формате +7(XXX)-XXX-XX-XX.")
+                self.show_failure_message_with_reason()
+                return
+
+
+            for index in range(self.user_list.count()):
+                item = self.user_list.item(index)
+                user_info = item.text()
+                if (search_name in user_info) and (search_phone in user_info):
+                    self.found = True
+                    self.user_list.setCurrentItem(item)
+                    return
+
+            QMessageBox.warning(self.centralwidget, 'Search Error', 'Пользователь не найден')
 
     def retranslateUi(self, AddUserWindow):
         AddUserWindow.setWindowTitle(QCoreApplication.translate("AddUserWindow", u"MainWindow", None))
