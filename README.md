@@ -16,19 +16,4 @@ This is like admin panel for - https://github.com/Iwlj4s/bSalonWeb2
 
 <H2 id="install"> How to install </H2>
 
-1. In the console, you must be in the directory where you want to install the setup file
-   
-![image](https://github.com/Iwlj4s/bSalonAdmin/assets/113620590/f251c38e-60c8-4fef-b4bc-a3af639ebfd4)
-
-   
-3. Use this command:
-
-```
-curl -O -L https://github.com/Iwlj4s/bSalonAdmin/tree/master/setup/ElegansAdminSetup.exe
-```
-
-
-*  `-O`  You can change on ` -o file_name_you_want.exe `
-
-
-* `-L` means "follow location" and is used to have curl automatically follow redirects when downloading a file. Some URLs can be configured to redirect to other URLs, and the -L option allows curl to automatically follow these redirects and retrieve the file from the final location.
+google disk - https://drive.google.com/drive/folders/1pqJSsdCohkMbSahgWCVEgwBZLAI22Gmt?usp=sharing
