@@ -1,5 +1,6 @@
 import datetime
-import string
+import re
+from email_validator import validate_email, EmailNotValidError
 
 from database.orm_query import orm_get_user_by_name, orm_get_admin_by_name, orm_get_user_date, orm_get_user_time, \
     orm_get_master
@@ -25,6 +26,37 @@ def admin_in_db(user_name, user_password, session):
 
     else:
         return False
+
+
+# Check correct Name input
+def validate_name_input(name):
+    if not len(name) >= 2:
+        reason = "Введите корректное имя"
+        return False
+
+    return True
+
+
+# Check correct Phone input
+def validate_phone_input(phone):
+    phone_pattern = r'\+7\(\d{3}\)\d{3}-\d{2}-\d{2}'
+    if re.match(phone_pattern, phone):
+        print("MATCH PHONE")
+        return True
+
+    else:
+        return False
+
+
+# Check correct Email input
+def validate_email_input(email):
+    try:
+        email = validate_email(email)
+        email = email.normalized
+
+        return email
+    except EmailNotValidError as e:
+        return None
 
 
 # Check correct Date input

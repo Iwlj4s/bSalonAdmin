@@ -12,7 +12,7 @@ def get_users_list(session):
         user_date = user.date
         user_time = user.time
         user_info = (f"Имя: {user_name}, Телефон: {user_phone}, Почта: {user_email},"
-                     f" Услуга: {user_service}, Мастер: {user_master}, Дата: {user_date}, Время: {user_time}")
+                     f" Услуга: {user_service}, Мастер: {user_master}, Дата: {user_date}, Время-{user_time}")
         users_info += user_info + "\n"
 
     print(users_info)

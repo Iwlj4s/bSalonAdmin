@@ -9,7 +9,8 @@ from PySide6.QtWidgets import (QApplication, QFrame, QLabel, QLineEdit,
                                QListWidget, QListWidgetItem, QMainWindow, QPushButton,
                                QSizePolicy, QTextBrowser, QWidget, QMessageBox)
 
-from checks.user_check import validate_date_input, validate_time_input, correct_time_date_master
+from checks.user_check import validate_date_input, validate_time_input, correct_time_date_master, validate_name_input, \
+    validate_phone_input, validate_email_input
 from database.orm_query import orm_user_add_info, orm_delete_user
 from utils.utils import count_list_items, get_users_list
 
@@ -282,8 +283,27 @@ class Ui_AddUserWindow(object):
                                                                                  date=self.data_input.text(),
                                                                                  time=self.time_input.text(),
                                                                                  master=self.mster_input.text())
+            valid_name = validate_name_input(self.name_input.text())
+            valid_phone = validate_phone_input(self.phone_input.text())
+            valid_email = validate_email_input(self.email_input.text())
             valid_date = validate_date_input(self.data_input.text())
             valid_time = validate_time_input(self.time_input.text())
+
+            if not valid_name:
+                self.reason = "Введите корректное имя'"
+                self.show_failure_message_with_reason()
+                return
+
+            if not valid_phone:
+                self.reason = ("Некорректный формат номера телефона."
+                               "\nПожалуйста, введите номер в формате +7(XXX)-XXX-XX-XX.")
+                self.show_failure_message_with_reason()
+                return
+
+            if valid_email is None:
+                self.reason = ("Некорректный формат почты."
+                               "\nПожалуйста, введите почту в формате 'abcd123@gmail.com'")
+                self.show_failure_message_with_reason()
 
             if valid_date is None:
                 self.reason = "Некорректный формат даты.\nПожалуйста, введите дату в формате 'дд-мм-гг гг'"
@@ -346,6 +366,7 @@ class Ui_AddUserWindow(object):
             return
 
         selected_user = selected_items[0].text()
+        print("Selected User: ", selected_user)
         user_info = selected_user.split(",")
         user_name = user_info[0].split(":")[1].strip()
         user_phone = user_info[1].split(":")[1].strip()
@@ -353,15 +374,7 @@ class Ui_AddUserWindow(object):
         user_service = user_info[3].split(":")[1].strip()
         user_master = user_info[4].split(":")[1].strip()
         user_date = user_info[5].split(":")[1].strip()
-        user_time = user_info[6].split(":")[1].strip()
-
-        print(user_name)
-        print(user_phone)
-        print(user_email)
-        print(user_service)
-        print(user_master)
-        print(user_date)
-        print(user_time)
+        user_time = user_info[6].split("-")[1].strip()
 
         session = self.session
         try:
